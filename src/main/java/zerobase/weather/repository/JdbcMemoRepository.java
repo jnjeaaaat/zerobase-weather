@@ -32,7 +32,7 @@ public class JdbcMemoRepository {
         return jdbcTemplate.query(sql, memoRowMapper());
     }
 
-    public Optional<Memo> findById(int id) {
+    public Optional<Memo> findById(Long id) {
         String sql = "SELECT * FROM memo WHERE id = ?";
 
         return jdbcTemplate.query(sql, memoRowMapper(), id)
@@ -44,7 +44,7 @@ public class JdbcMemoRepository {
         // ResultSet
         // {id = 1, text = "This is memo"}
         return ((rs, rowNum) -> new Memo(
-                rs.getInt("id"),
+                rs.getLong("id"),
                 rs.getString("text")
         ));
     }

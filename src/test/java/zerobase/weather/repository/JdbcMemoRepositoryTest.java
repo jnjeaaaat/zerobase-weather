@@ -21,13 +21,13 @@ class JdbcMemoRepositoryTest {
     @Test
     void insertMemoTest() {
         //given
-        Memo newMemo = new Memo(2, "insertMemoTest");
+        Memo newMemo = new Memo(2L, "insertMemoTest");
 
         //when
         jdbcMemoRepository.save(newMemo);
 
         //then
-        Optional<Memo> result = jdbcMemoRepository.findById(2);
+        Optional<Memo> result = jdbcMemoRepository.findById(2L);
         assertEquals("insertMemoTest", result.get().getText());
     }
 
