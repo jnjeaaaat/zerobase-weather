@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import zerobase.weather.domain.Diary;
 import zerobase.weather.repository.DiaryRepository;
 
 import java.io.BufferedReader;
@@ -36,6 +37,15 @@ public class DiaryService {
         System.out.println("아이콘 : " + parsedWeather.get("icon"));
 
         // 파싱된 데이터 + 일기 값 우리 db에 넣기
+        Diary diary = Diary.builder()
+                .weather(parsedWeather.get("main").toString())
+                .temperature((Double) parsedWeather.get("temp"))
+                .icon(parsedWeather.get("icon").toString())
+                .text(text)
+                .date(date)
+                .build();
+
+        diaryRepository.save(diary);
     }
 
     private String getWeatherString() {
@@ -65,6 +75,7 @@ public class DiaryService {
         }
     }
 
+    // weather json parsing
     private Map<String, Object> parseWeather(String jsonString) {
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject;
