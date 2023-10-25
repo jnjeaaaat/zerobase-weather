@@ -2,8 +2,11 @@ package zerobase.weather.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import zerobase.weather.domain.DateWeather;
 import zerobase.weather.domain.Diary;
+import zerobase.weather.dto.DiaryDto;
 import zerobase.weather.repository.DiaryRepository;
 
 import java.time.LocalDate;
@@ -12,40 +15,37 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DiaryService {
     private final DiaryRepository diaryRepository;
-    private final JsonManager jsonManager;
+    private final DateWeatherService dateWeatherService;
 
-    @Transactional
-    public void createDiary(LocalDate date, String text) {
-        // openWeatherMap 에서 날씨 데이터 가져오기
-        String weatherData = jsonManager.getWeatherString();
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public DiaryDto createDiary(LocalDate date, String text) {
+        // 날씨 데이터 가져오기 (기존 DB 에서 가져오기)
+        DateWeather dateWeather = dateWeatherService.getDateWeather(date);
 
-        // 받아온 씨 json 파싱하기
-        Map<String, Object> parsedWeather = jsonManager.parseWeather(weatherData);
+        Diary diary = new Diary();
+        diary.setDateWeather(dateWeather);
+        diary.setText(text);
 
         // 파싱된 데이터 + 일기 값 우리 db에 넣기
-        diaryRepository.save(Diary.builder()
-                .weather(parsedWeather.get("main").toString())
-                .temperature((Double) parsedWeather.get("temp"))
-                .icon(parsedWeather.get("icon").toString())
-                .text(text)
-                .date(date)
-                .build());
+        return DiaryDto.fromEntity(
+                diaryRepository.save(diary)
+        );
     }
 
-
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Diary> readDiary(LocalDate date) {
         return diaryRepository.findAllByDate(date);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Diary> readDiaries(LocalDate startDate, LocalDate endDate) {
         return diaryRepository.findAllByDateBetween(startDate, endDate);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void updateDiary(LocalDate date, String text) {
         Diary diary = diaryRepository.getFirstByDate(date);
         diary.setText(text);
@@ -53,7 +53,6 @@ public class DiaryService {
         diaryRepository.save(diary);
     }
 
-    @Transactional
     public void deleteDiary(LocalDate date) {
         diaryRepository.deleteAllByDate(date);
     }

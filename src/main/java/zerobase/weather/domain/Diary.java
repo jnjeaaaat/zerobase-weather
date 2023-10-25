@@ -30,4 +30,11 @@ public class Diary {
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public void setDateWeather(DateWeather dateWeather) {
+        this.weather = dateWeather.getWeather();
+        this.icon = dateWeather.getIcon();
+        this.temperature = dateWeather.getTemperature();
+        this.date = dateWeather.getDate();
+    }
 }
