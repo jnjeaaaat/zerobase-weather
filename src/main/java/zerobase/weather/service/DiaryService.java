@@ -10,7 +10,6 @@ import zerobase.weather.WeatherApplication;
 import zerobase.weather.domain.DateWeather;
 import zerobase.weather.domain.Diary;
 import zerobase.weather.dto.DiaryDto;
-import zerobase.weather.error.InvalidDate;
 import zerobase.weather.repository.DiaryRepository;
 
 import java.time.LocalDate;
@@ -48,9 +47,6 @@ public class DiaryService {
 
     @Transactional(readOnly = true)
     public List<Diary> readDiary(LocalDate date) {
-//        if (date.isAfter(LocalDate.ofYearDay(3050, 1))) {
-//            throw new InvalidDate();
-//        }
         return diaryRepository.findAllByDate(date);
     }
 
