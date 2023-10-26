@@ -1,9 +1,12 @@
 package zerobase.weather.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import zerobase.weather.WeatherApplication;
 import zerobase.weather.domain.DateWeather;
 import zerobase.weather.repository.DateWeatherRepository;
 
@@ -17,10 +20,13 @@ public class DateWeatherService {
     private final DateWeatherRepository dateWeatherRepository;
     private final JsonManager jsonManager;
 
+    private static final Logger logger = LoggerFactory.getLogger(WeatherApplication.class);
+
     @Transactional
     @Scheduled(cron = "0 0 1 * * *")
     public void saveDateWeather() {
         dateWeatherRepository.save(getWeatherFromApi());
+        logger.info("오늘 날씨 데이터 잘 가져옴.");
     }
 
     private DateWeather getWeatherFromApi() {
