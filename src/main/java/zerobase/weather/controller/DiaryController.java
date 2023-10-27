@@ -30,9 +30,6 @@ public class DiaryController {
     @GetMapping("/read/diary")
     public List<Diary> readDiary(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-//        if (date.isAfter(LocalDate.ofYearDay(3050, 1))) {
-//            throw new InvalidDate();
-//        }
         return diaryService.readDiary(date);
     }
 
